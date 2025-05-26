@@ -1,4 +1,5 @@
 import json
+import markdown
 from sqlalchemy.orm import Session
 
 from domain_models.neurology_models import Metric, Question, ReportKey
@@ -6,6 +7,7 @@ from repository.reports_repository import create_predicted_report, get_all_repor
     get_predicted_reports, create_feedback
 from retrieval.p1_anamnesia_retrieval import generate_neurology_report
 from view_models.ReportViewModel import ReportViewModel
+
 
 
 def create_and_save_generated_report(case_name: str, anamnesis: str, db: Session):
@@ -27,7 +29,8 @@ def get_report_with_viewmodel(report_id: int, predicted_report_id: int, db: Sess
         return None
 
     predicted_reports = get_predicted_reports(report_id, db)
-    predicted = next((r for r in predicted_reports if r.id == predicted_report_id), None) if predicted_report_id else predicted_reports[0] if predicted_reports else None
+    predicted = next((r for r in predicted_reports if r.id == predicted_report_id), None) if predicted_report_id else \
+        predicted_reports[0] if predicted_reports else None
     if not predicted:
         return None
 
@@ -45,6 +48,33 @@ def get_report_with_viewmodel(report_id: int, predicted_report_id: int, db: Sess
         all_predicted_reports=predicted_reports,
         questions_by_section=questions_by_section
     )
+
+
+def get_second_phase_report(report_id: int, predicted_report_id: int, db: Session):
+    actual_report = get_report_by_id(report_id, db)
+    if not actual_report:
+        return None
+
+    predicted_reports = get_predicted_reports(report_id, db)
+    predicted = next((r for r in predicted_reports if r.id == predicted_report_id), None) if predicted_report_id else \
+        predicted_reports[0] if predicted_reports else None
+    if not predicted:
+        return None
+
+    questions_by_section = {}
+    view_model = ReportViewModel(
+        actual_report=actual_report,
+        predicted_report=predicted,
+        all_predicted_reports=predicted_reports,
+        questions_by_section=questions_by_section
+    )
+
+    for report in [view_model.actual_report, view_model.predicted_report]:
+        pe = report.physical_examination_report
+        if pe and "llm_output" in pe:
+            pe["llm_output_html"] = markdown.markdown(pe["llm_output"])
+
+    return view_model
 
 
 def submit_feedback_data(form_data, predicted_report_id, actual_report_id, db: Session, user_id: int = 1):
@@ -98,7 +128,6 @@ def submit_feedback_data(form_data, predicted_report_id, actual_report_id, db: S
                 create_feedback(db, user_id, predicted_report_id, secondary_key_id, question_id, rating, comment)
 
     db.commit()
-
 
 
 def delete_report_by_id(report_id: int, db: Session):

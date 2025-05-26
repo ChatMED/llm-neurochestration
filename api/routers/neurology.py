@@ -11,7 +11,7 @@ from starlette.templating import Jinja2Templates
 from database.database import get_db
 from schemas.neurology_schema import ReportSummary
 from services.reports_services import list_actual_reports, create_and_save_generated_report, get_report_with_viewmodel, \
-    submit_feedback_data, delete_report_by_id, get_actual_report
+    submit_feedback_data, delete_report_by_id, get_actual_report, get_second_phase_report
 
 router = APIRouter()
 
@@ -63,6 +63,14 @@ async def submit_feedback(request: Request, predicted_report_id: int = Form(...)
     form_data = await request.form()
     submit_feedback_data(form_data, predicted_report_id, actual_report_id, db)
     return RedirectResponse(f"/report/{actual_report_id}?predicted_report_id={predicted_report_id}", status_code=303)
+
+
+@router.get("/second_report/{report_id}", response_class=HTMLResponse)
+def view_report(report_id: int, request: Request, predicted_report_id: Optional[int] = None, db: Session = Depends(get_db)):
+    view_model = get_second_phase_report(report_id, predicted_report_id, db)
+    if not view_model:
+        return HTMLResponse(content="Report not found", status_code=404)
+    return templates.TemplateResponse("second_phase_report_details.html", {"request": request, "report": view_model})
 
 
 @router.post("/report/{report_id}/delete")
