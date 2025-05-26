@@ -5,9 +5,6 @@ from typing import List, Literal, Optional
 from langchain_core.messages import AIMessage
 from langchain_core.output_parsers import PydanticOutputParser
 from langchain_core.prompts import ChatPromptTemplate
-from pydantic import BaseModel, Field
-
-import os
 from langchain.chat_models import init_chat_model
 
 from config.models.models import NeurologyReport
@@ -20,7 +17,7 @@ prompt = ChatPromptTemplate.from_messages(
         (
             "system",
             """You are a neurology doctor and you should help the doctor to identify the required questions in the report.
-            ake into consideration that the routine direct questions are as follows: 
+            Take into consideration that the routine direct questions are as follows: 
             1.Have you noticed any change in your mood, memory or powers of concentration? 
             2.Have you ever lost consciousness or had a fit or seizure? 
             3.Do you suffer unduly from headaches? 

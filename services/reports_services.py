@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from domain_models.neurology_models import Metric, Question, ReportKey
 from repository.reports_repository import create_predicted_report, get_all_reports, get_report_by_id, \
     get_predicted_reports, create_feedback
-from retrieval.history_retrieval import generate_neurology_report
+from retrieval.p1_anamnesia_retrieval import generate_neurology_report
 from view_models.ReportViewModel import ReportViewModel
 
 
