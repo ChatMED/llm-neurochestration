@@ -14,7 +14,7 @@ class PredictedNeurologyReportRecord(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     summary = Column(Text, nullable=False)
     full_report = Column(JSONB, nullable=False)
-    phase = Column(String, nullable=False)
+    physical_examination_report = Column(JSONB, nullable=False)
     real_report_id = Column(Integer, ForeignKey("neurology_reports.id"), nullable=True)
     real_report = relationship("NeurologyReportRecord", back_populates="generated_reports")
 
@@ -27,6 +27,7 @@ class NeurologyReportRecord(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     summary = Column(Text, nullable=False)
     full_report = Column(JSONB, nullable=False)
+    physical_examination_report = Column(JSONB, nullable=False)
     generated_reports = relationship("PredictedNeurologyReportRecord", back_populates="real_report")
 
 
