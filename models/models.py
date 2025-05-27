@@ -53,3 +53,8 @@ class NeurologyReport(BaseModel):
     treatments: List[TreatmentRecommendation] = Field(...,
                                                       description="Initial treatment plan for each hypothesized diagnosis")
 
+
+class DiagnosisReport(BaseModel):
+    diagnosis: str = Field(..., description="Retrieved diagnosis from the report")
+    icd_code: str = Field(..., description="ICD code of the diagnosis")
+    category: str = Field(...,description="The category of the diagnosis")

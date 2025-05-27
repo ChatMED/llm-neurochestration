@@ -4,7 +4,8 @@ from sqlalchemy.orm import Session
 
 from domain_models.neurology_models import Metric, Question, ReportKey
 from repository.reports_repository import create_predicted_report, get_all_reports, get_report_by_id, \
-    get_predicted_reports, create_feedback
+    get_predicted_reports, create_feedback, update_diagnosis_report
+from retrieval.diagnosis_and_category_retriever import generate_diagnosis_report
 from retrieval.p1_anamnesia_retrieval import generate_neurology_report
 from view_models.ReportViewModel import ReportViewModel
 
@@ -14,6 +15,9 @@ def create_and_save_generated_report(case_name: str, anamnesis: str, db: Session
     report = generate_neurology_report(anamnesis)
     return create_predicted_report(db, case_name, report.compressed_summary, json.loads(report.model_dump_json()))
 
+def create_and_save_diagnosis(case_name: str, answer: str, db: Session):
+    report = generate_diagnosis_report(answer)
+    return update_diagnosis_report(db, case_name, json.loads(report.model_dump_json()))
 
 def list_actual_reports(db: Session):
     return get_all_reports(db)

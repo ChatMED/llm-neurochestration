@@ -1,5 +1,6 @@
-from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, JSON
 from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.orm import relationship
 from datetime import datetime
 
@@ -26,7 +27,7 @@ class NeurologyReportRecord(Base):
     name = Column(String)
     created_at = Column(DateTime, default=datetime.utcnow)
     summary = Column(Text, nullable=False)
-    full_report = Column(JSONB, nullable=False)
+    full_report = Column(MutableDict.as_mutable(JSON))
     physical_examination_report = Column(JSONB, nullable=False)
     generated_reports = relationship("PredictedNeurologyReportRecord", back_populates="real_report")
 

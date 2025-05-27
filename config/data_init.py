@@ -1,4 +1,3 @@
-import os
 from typing import List
 
 import pandas as pd
@@ -7,7 +6,7 @@ from langchain_core.output_parsers import PydanticOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from pydantic import Field, BaseModel
 
-from config.models.models import AnatomicalLocalisation, Pathophysiology, DiagnosticTest, TreatmentRecommendation
+from models.models import AnatomicalLocalisation, Pathophysiology, DiagnosticTest, TreatmentRecommendation
 
 df = pd.read_csv("../data/extracted_data.csv")
 df.head()
